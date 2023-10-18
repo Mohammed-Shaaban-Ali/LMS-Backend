@@ -4,6 +4,7 @@ import { ErrorMiddlware } from "./middleware/error";
 export const app = express();
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+import userRoute from "./routes/userRoute";
 
 // body parser
 app.use(express.json({ limit: "50mb" }));
@@ -13,6 +14,9 @@ app.use(cookieParser());
 
 // cors
 app.use(cors());
+
+// routes
+app.use("/api", userRoute);
 
 // unknwon route
 app.all("*", (req: Request, res: Response, next: NextFunction) => {
