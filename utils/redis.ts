@@ -1,4 +1,4 @@
-// const Redis = require('ioredis');
+require("dotenv").config();
 import { Redis } from "ioredis";
 
 const redisClient = () => {
