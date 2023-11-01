@@ -75,11 +75,15 @@ userSchma.pre("save", async function (next) {
 
 // access token
 userSchma.methods.SignAccessToken = function () {
-  return Jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN || "");
+  return Jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN || "", {
+    expiresIn: "5m",
+  });
 };
 // refresh token
 userSchma.methods.SignRefreshToken = function () {
-  return Jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN || "");
+  return Jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN || "", {
+    expiresIn: "3d",
+  });
 };
 
 // compare password
