@@ -14,7 +14,7 @@ import {
   sendToken,
 } from "../utils/JWT";
 import { redis } from "../utils/redis";
-import { getUserById } from "../services/user_Service";
+import { getUserById } from "../services/userService";
 
 // register user
 interface IRegistertion {
