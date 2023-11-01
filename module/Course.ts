@@ -22,7 +22,6 @@ interface ICourseData extends Document {
   title: string;
   description: string;
   videoUrl: string;
-  videoThumbnail: object;
   videoSction: string;
   videoLength: number;
   videoPlayer: string;
@@ -41,7 +40,7 @@ interface ICourse extends Document {
   demoUrl: string;
   benfites: { title: string }[];
   prerequisites: { title: string }[];
-  rewrites: IReview[];
+  reviews: IReview[];
   courseData: ICourseData[];
   rating?: number;
   purchaseed?: number;
@@ -69,7 +68,6 @@ const commentSchema = new Schema<IComment>({
 
 const courseDataSchema = new Schema<ICourseData>({
   videoUrl: String,
-  videoThumbnail: Object,
   title: String,
   videoSction: String,
   description: String,
@@ -88,16 +86,15 @@ const courseSchema = new Schema<ICourse>({
   thumbnail: {
     public_id: {
       type: String,
-      require: true,
     },
-    url: { type: String, required: true },
+    url: { type: String },
   },
   tags: { type: String, required: true },
   level: { type: String, required: true },
   demoUrl: { type: String, required: true },
   benfites: [{ title: String }],
   prerequisites: [{ title: String }],
-  rewrites: [reviewSchema],
+  reviews: [reviewSchema],
   courseData: [courseDataSchema],
   rating: {
     type: Number,
