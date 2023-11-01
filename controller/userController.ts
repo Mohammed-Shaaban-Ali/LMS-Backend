@@ -1,10 +1,12 @@
 import { CatchAsyncErrors } from "./../middleware/catchAsyncErrors";
 import userModel, { IUser } from "../module/User";
 import ErrorHandler from "../utils/ErrorHandler";
-import { NextFunction, Request, Response, response } from "express";
+import { NextFunction, Request, Response } from "express";
 import Jwt, { JwtPayload, Secret } from "jsonwebtoken";
-import ejs, { name } from "ejs";
+import ejs from "ejs";
 import path from "path";
+const cloudinary = require("cloudinary");
+
 import sendMail from "../utils/sendEmail";
 import {
   accessTokenOptions,
@@ -277,5 +279,80 @@ export const updateUser = CatchAsyncErrors(
     }
   }
 );
-// test
-// test 2
+
+// update password
+interface IUpdateuser {
+  oldPassword: string;
+  newPassword: string;
+}
+export const updatePassword = CatchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { oldPassword, newPassword } = req.body as IUpdateuser;
+      const user = await userModel.findById(req.user?._id).select("+password");
+
+      if (!oldPassword || !newPassword)
+        return next(
+          new ErrorHandler("Please enter Old passsword and New password", 400)
+        );
+
+      if (user?.password === undefined)
+        return next(new ErrorHandler("Invalid user", 400));
+
+      const isPasswordMatch = await user?.comparePassword(oldPassword);
+      if (!isPasswordMatch)
+        return next(new ErrorHandler("Password is wrong", 400));
+
+      user.password = newPassword;
+      await user?.save();
+      await redis.set(user._id, JSON.stringify(user));
+      res.status(200).json({ user });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.mesage, 400));
+    }
+  }
+);
+
+// update avatar
+
+interface IUpdateuser {
+  avatar: string;
+}
+export const updateAvatar = CatchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { avatar } = req.body;
+      const userId = req.user?._id;
+      const user = await userModel.findById(userId);
+      if (avatar && user) {
+        if (user?.avatar?.public_id) {
+          await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
+          const myClou = await cloudinary.v2.uploader.upload(avatar, {
+            folder: "LMS-avatars",
+            width: 150,
+          });
+          user.avatar = {
+            public_id: myClou.public_id,
+            url: myClou.secure_url,
+          };
+        } else {
+          const myClou = await cloudinary.v2.uploader.upload(avatar, {
+            folder: "LMS-avatars",
+            width: 150,
+          });
+          console.log("1");
+
+          user.avatar = {
+            public_id: myClou.public_id,
+            url: myClou.secure_url,
+          };
+        }
+      }
+      await user?.save();
+      await redis.set(userId, JSON.stringify(user));
+      res.status(200).json({ success: true, user });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.mesage, 400));
+    }
+  }
+);

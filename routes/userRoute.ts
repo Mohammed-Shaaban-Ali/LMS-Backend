@@ -6,6 +6,8 @@ import {
   getUser,
   registertionToken,
   socialLogin,
+  updateAvatar,
+  updatePassword,
   updateToken,
   updateUser,
 } from "../controller/userController";
@@ -20,5 +22,7 @@ userRoute.post("/logout", isAuthenticated, LogoutUser);
 userRoute.get("/refresh", updateToken);
 userRoute.get("/get-login-user", isAuthenticated, getUser);
 userRoute.put("/update-user-info", isAuthenticated, updateUser);
+userRoute.put("/update-user-password", isAuthenticated, updatePassword);
+userRoute.put("/update-user-avatar", isAuthenticated, updateAvatar);
 
 export default userRoute;
