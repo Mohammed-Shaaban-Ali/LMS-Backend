@@ -7,21 +7,24 @@ export interface INotification extends Document {
   userId: string;
 }
 
-const motificationSchema = new Schema<INotification>({
-  title: {
-    type: String,
-    required: true,
+const motificationSchema = new Schema<INotification>(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    message: {
+      type: String,
+      required: true,
+    },
+    status: {
+      type: String,
+      required: true,
+      default: "unread",
+    },
   },
-  message: {
-    type: String,
-    required: true,
-  },
-  status: {
-    type: String,
-    required: true,
-    default: "unread",
-  },
-});
+  { timestamps: true }
+);
 
 const notificationModel: Model<INotification> = mongoose.model(
   "Notification",
