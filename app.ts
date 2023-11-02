@@ -7,6 +7,7 @@ const cors = require("cors");
 
 import userRoute from "./routes/userRoute";
 import courseRoute from "./routes/courseRoute";
+import orderRoute from "./routes/orderRoute";
 
 // body parser
 app.use(express.json({ limit: "50mb" }));
@@ -20,6 +21,7 @@ app.use(cors());
 // routes
 app.use("/api", userRoute);
 app.use("/api", courseRoute);
+app.use("/api", orderRoute);
 
 // unknwon route
 app.all("*", (req: Request, res: Response, next: NextFunction) => {
