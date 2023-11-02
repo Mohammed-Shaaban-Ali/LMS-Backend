@@ -8,6 +8,7 @@ import userModel from "../module/User";
 import CourseModel from "../module/Course";
 import sendMail from "../utils/sendEmail";
 import notificationModel from "../module/Notification";
+import { newOrder } from "../services/orderService";
 
 // create order
 
@@ -35,7 +36,7 @@ export const createOrder = CatchAsyncErrors(
         userId: user?._id,
       };
 
-      const order = await OrderModel.create(data);
+      //   const order = await OrderModel.create(data);
 
       const mailData = {
         order: {
@@ -66,15 +67,21 @@ export const createOrder = CatchAsyncErrors(
         return next(new ErrorHandler(error.mesage, 400));
       }
 
+      course.purchaseed
+        ? (course.purchaseed = course.purchaseed + 1)
+        : course.purchaseed;
+      await course.save();
+
       user?.courses.push(course._id);
       await user?.save();
+
       await notificationModel.create({
         userId: user?._id,
         title: "New Order",
         message: `You have anew order ${course.name}`,
       });
 
-      res.status(200).json({ success: true, order: course });
+      newOrder(data, res, next);
     } catch (error: any) {
       return next(new ErrorHandler(error.mesage, 400));
     }
