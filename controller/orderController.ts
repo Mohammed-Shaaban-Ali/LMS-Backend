@@ -3,7 +3,7 @@ import { CatchAsyncErrors } from "./../middleware/catchAsyncErrors";
 import ejs from "ejs";
 import path from "path";
 import ErrorHandler from "../utils/ErrorHandler";
-import OrderModel, { IOrder } from "../module/Order";
+import { IOrder } from "../module/Order";
 import userModel from "../module/User";
 import CourseModel from "../module/Course";
 import sendMail from "../utils/sendEmail";
