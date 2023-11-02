@@ -1,5 +1,9 @@
 import express from "express";
 import {
+  addAnswer,
+  addQuestions,
+  addReplay,
+  addReview,
   editCourse,
   getAllCourses,
   getCoursesByUser,
@@ -18,6 +22,9 @@ courseRoute.post(
 
 courseRoute.get("/get-courses/", getAllCourses);
 
+courseRoute.put("/add-qusetion", isAuthenticated, addQuestions);
+courseRoute.put("/add-answer", isAuthenticated, addAnswer);
+
 courseRoute.put(
   "/eidt-course/:id",
   isAuthenticated,
@@ -25,6 +32,13 @@ courseRoute.put(
   editCourse
 );
 courseRoute.get("/get-course/:id", getSingleCourse);
+courseRoute.put("/add-review/:id", isAuthenticated, addReview);
+courseRoute.put(
+  "/add-replay",
+  isAuthenticated,
+  authorizeRoles("admin"),
+  addReplay
+);
 
 courseRoute.get("/get-course-content/:id", isAuthenticated, getCoursesByUser);
 export default courseRoute;
