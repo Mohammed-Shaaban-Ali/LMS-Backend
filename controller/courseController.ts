@@ -8,6 +8,7 @@ import { redis } from "../utils/redis";
 import mongoose from "mongoose";
 import path from "path";
 import sendMail from "../utils/sendEmail";
+import notificationModel from "../module/Notification";
 const cloudinary = require("cloudinary");
 
 // upload course
@@ -170,6 +171,11 @@ export const addQuestions = CatchAsyncErrors(
 
       courseContent.questions.push(newQuestion);
 
+      await notificationModel.create({
+        userId: req.user?.id,
+        title: "New Question",
+        message: `You have a new in the course ${courseContent?.title}`,
+      });
       await course?.save();
 
       res.status(200).json({ success: true, course });
@@ -225,7 +231,11 @@ export const addAnswer = CatchAsyncErrors(
       await course?.save();
 
       if (req.user?._id === question.user._id) {
-        // create notification
+        await notificationModel.create({
+          userId: req.user?.id,
+          title: "New Answer",
+          message: `You have a new in the Answer ${courseContent?.title}`,
+        });
       } else {
         const data = {
           name: question.user.name,
