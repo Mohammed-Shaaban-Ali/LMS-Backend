@@ -12,6 +12,7 @@ import {
   updateUser,
 } from "../controller/userController";
 import { authorizeRoles, isAuthenticated } from "../middleware/auth";
+import { getallUsers } from "../services/userService";
 const userRoute = express.Router();
 
 userRoute.post("/register", registertionToken);
@@ -21,6 +22,12 @@ userRoute.post("/login-socialauth", socialLogin);
 userRoute.post("/logout", isAuthenticated, LogoutUser);
 userRoute.get("/refresh", updateToken);
 userRoute.get("/get-login-user", isAuthenticated, getUser);
+userRoute.get(
+  "/get-all-users",
+  isAuthenticated,
+  authorizeRoles("admin"),
+  getallUsers
+);
 userRoute.put("/update-user-info", isAuthenticated, updateUser);
 userRoute.put("/update-user-password", isAuthenticated, updatePassword);
 userRoute.put("/update-user-avatar", isAuthenticated, updateAvatar);

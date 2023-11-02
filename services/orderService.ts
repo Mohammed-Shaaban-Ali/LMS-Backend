@@ -1,4 +1,4 @@
-import { NextFunction, Response } from "express";
+import { Response } from "express";
 import { CatchAsyncErrors } from "../middleware/catchAsyncErrors";
 import OrderModel from "../module/Order";
 

@@ -3,7 +3,7 @@ import { CatchAsyncErrors } from "./../middleware/catchAsyncErrors";
 import ejs from "ejs";
 import path from "path";
 import ErrorHandler from "../utils/ErrorHandler";
-import { IOrder } from "../module/Order";
+import OrderModel, { IOrder } from "../module/Order";
 import userModel from "../module/User";
 import CourseModel from "../module/Course";
 import sendMail from "../utils/sendEmail";
@@ -82,6 +82,18 @@ export const createOrder = CatchAsyncErrors(
       });
 
       newOrder(data, res, next);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.mesage, 400));
+    }
+  }
+);
+
+// get all orders
+export const getAllOrdersadmin = CatchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const orders = await OrderModel.find().sort({ createAt: -1 });
+      res.status(200).json({ success: true, orders });
     } catch (error: any) {
       return next(new ErrorHandler(error.mesage, 400));
     }
