@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import ejs from "ejs";
 import { CatchAsyncErrors } from "../middleware/catchAsyncErrors";
 import ErrorHandler from "../utils/ErrorHandler";
-import { createCourse } from "../services/courseService";
+import { createCourse, getallCoursesadmin } from "../services/courseService";
 import CourseModel from "../module/Course";
 import { redis } from "../utils/redis";
 import mongoose from "mongoose";
@@ -353,6 +353,18 @@ export const addReplay = CatchAsyncErrors(
 
       await course.save();
       res.status(200).json({ success: true, course });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.mesage, 400));
+    }
+  }
+);
+
+// get all courses
+
+export const getAllcoursesAdmin = CatchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      getallCoursesadmin(res);
     } catch (error: any) {
       return next(new ErrorHandler(error.mesage, 400));
     }

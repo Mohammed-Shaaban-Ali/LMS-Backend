@@ -14,7 +14,7 @@ import {
   sendToken,
 } from "../utils/JWT";
 import { redis } from "../utils/redis";
-import { getUserById } from "../services/userService";
+import { getUserById, getallUsers } from "../services/userService";
 
 // register user
 interface IRegistertion {
@@ -351,6 +351,18 @@ export const updateAvatar = CatchAsyncErrors(
       await user?.save();
       await redis.set(userId, JSON.stringify(user));
       res.status(200).json({ success: true, user });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.mesage, 400));
+    }
+  }
+);
+
+// get all users
+
+export const getAllUsers = CatchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      getallUsers(res);
     } catch (error: any) {
       return next(new ErrorHandler(error.mesage, 400));
     }

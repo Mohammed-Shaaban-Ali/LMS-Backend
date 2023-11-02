@@ -6,6 +6,7 @@ import {
   addReview,
   editCourse,
   getAllCourses,
+  getAllcoursesAdmin,
   getCoursesByUser,
   getSingleCourse,
   uploadCourse,
@@ -20,7 +21,13 @@ courseRoute.post(
   uploadCourse
 );
 
-courseRoute.get("/get-courses/", getAllCourses);
+courseRoute.get("/get-courses", getAllCourses);
+courseRoute.get(
+  "/get-all-courses",
+  isAuthenticated,
+  authorizeRoles("admin"),
+  getAllcoursesAdmin
+);
 
 courseRoute.put("/add-qusetion", isAuthenticated, addQuestions);
 courseRoute.put("/add-answer", isAuthenticated, addAnswer);
