@@ -18,3 +18,14 @@ export const getallUsers = async (res: Response) => {
   const users = await userModel.find().sort({ createdAt: -1 });
   res.status(201).json({ success: true, users });
 };
+
+// update user role
+export const upadteUserRoleService = async (
+  res: Response,
+  id: string,
+  role: string
+) => {
+  const users = await userModel.findByIdAndUpdate(id, { role }, { new: true });
+
+  res.status(201).json({ success: true, users });
+};

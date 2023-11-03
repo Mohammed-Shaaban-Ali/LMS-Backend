@@ -3,6 +3,7 @@ import {
   ActivateUser,
   LoginUser,
   LogoutUser,
+  deleteUser,
   getUser,
   registertionToken,
   socialLogin,
@@ -10,6 +11,7 @@ import {
   updatePassword,
   updateToken,
   updateUser,
+  updateUserRole,
 } from "../controller/userController";
 import { authorizeRoles, isAuthenticated } from "../middleware/auth";
 import { getallUsers } from "../services/userService";
@@ -31,5 +33,18 @@ userRoute.get(
 userRoute.put("/update-user-info", isAuthenticated, updateUser);
 userRoute.put("/update-user-password", isAuthenticated, updatePassword);
 userRoute.put("/update-user-avatar", isAuthenticated, updateAvatar);
+userRoute.put(
+  "/update-user-role",
+  isAuthenticated,
+  authorizeRoles("admin"),
+  updateUserRole
+);
+
+userRoute.delete(
+  "/delete-user/:id",
+  isAuthenticated,
+  authorizeRoles("admin"),
+  deleteUser
+);
 
 export default userRoute;

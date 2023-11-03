@@ -3,7 +3,6 @@ import { CatchAsyncErrors } from "./catchAsyncErrors";
 import ErrorHandler from "../utils/ErrorHandler";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { redis } from "../utils/redis";
-import { IUser } from "../module/User";
 
 export const isAuthenticated = CatchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -18,7 +17,7 @@ export const isAuthenticated = CatchAsyncErrors(
       process.env.ACCESS_TOKEN as string
     ) as JwtPayload;
     if (!decoded)
-      return next(new ErrorHandler("Access token isnot valid.", 400));
+      return next(new ErrorHandler("Access token is not valid.", 400));
 
     const user = await redis.get(decoded.id);
     if (!user) return next(new ErrorHandler("User not found.", 400));
