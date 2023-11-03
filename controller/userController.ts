@@ -14,7 +14,11 @@ import {
   sendToken,
 } from "../utils/JWT";
 import { redis } from "../utils/redis";
-import { getUserById, getallUsers } from "../services/userService";
+import {
+  getUserById,
+  getallUsers,
+  upadteUserRoleService,
+} from "../services/userService";
 
 // register user
 interface IRegistertion {
@@ -357,12 +361,45 @@ export const updateAvatar = CatchAsyncErrors(
   }
 );
 
-// get all users
+// get all users-admin
 
 export const getAllUsers = CatchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       getallUsers(res);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.mesage, 400));
+    }
+  }
+);
+
+// update user role
+export const updateUserRole = CatchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id, role } = req.body;
+      upadteUserRoleService(res, id, role);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.mesage, 400));
+    }
+  }
+);
+
+// delete user
+export const deleteUser = CatchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const user = await userModel.findById(id);
+
+      if (!user) return next(new ErrorHandler("User not found", 400));
+
+      await user.deleteOne({ id });
+      await redis.del(id);
+
+      res
+        .status(201)
+        .json({ success: true, message: "User deleted successfully" });
     } catch (error: any) {
       return next(new ErrorHandler(error.mesage, 400));
     }
