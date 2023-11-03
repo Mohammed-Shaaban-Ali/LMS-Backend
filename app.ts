@@ -10,6 +10,7 @@ import courseRoute from "./routes/courseRoute";
 import orderRoute from "./routes/orderRoute";
 import notificationRoute from "./routes/notificationRoute";
 import analyticsRoute from "./routes/analyticsRoute";
+import layoutRoute from "./routes/layoutRoute";
 
 // body parser
 app.use(express.json({ limit: "50mb" }));
@@ -26,6 +27,7 @@ app.use("/api", courseRoute);
 app.use("/api", orderRoute);
 app.use("/api", notificationRoute);
 app.use("/api", analyticsRoute);
+app.use("/api", layoutRoute);
 
 // unknwon route
 app.all("*", (req: Request, res: Response, next: NextFunction) => {
