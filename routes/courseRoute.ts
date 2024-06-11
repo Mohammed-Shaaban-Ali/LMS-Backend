@@ -23,6 +23,7 @@ courseRoute.post(
 );
 
 courseRoute.get("/get-courses", getAllCourses);
+
 courseRoute.get(
   "/get-all-courses",
   isAuthenticated,

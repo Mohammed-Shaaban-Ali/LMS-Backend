@@ -42,6 +42,7 @@ export const registertionToken = CatchAsyncErrors(
         email,
         password,
       };
+
       const activeToken = createActiveToken(user);
       const activtionCode = activeToken.activtionCode;
 
@@ -68,6 +69,7 @@ export const registertionToken = CatchAsyncErrors(
       } catch (error: any) {
         return next(new ErrorHandler(error.mesage, 400));
       }
+      
     } catch (error: any) {
       return next(new ErrorHandler(error.mesage, 400));
     }
