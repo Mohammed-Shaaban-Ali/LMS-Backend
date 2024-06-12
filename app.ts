@@ -18,8 +18,12 @@ app.use(express.json({ limit: "50mb" }));
 // cookieParser
 app.use(cookieParser());
 
-// cors
-app.use(cors());
+const corsOptions = {
+  origin: "http://localhost:3000", // specify the origin
+  credentials: true, // include credentials (cookies, authentication)
+};
+
+app.use(cors(corsOptions));
 
 // routes
 app.use("/api", userRoute);
