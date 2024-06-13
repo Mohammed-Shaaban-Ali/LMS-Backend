@@ -69,7 +69,6 @@ export const registertionToken = CatchAsyncErrors(
       } catch (error: any) {
         return next(new ErrorHandler(error.mesage, 400));
       }
-      
     } catch (error: any) {
       return next(new ErrorHandler(error.mesage, 400));
     }
@@ -106,13 +105,12 @@ export const ActivateUser = CatchAsyncErrors(
     try {
       const { activation_code, activation_token } =
         req.body as IActivaionRequst;
-
       const newUser: { user: IUser; activtionCode: string } = Jwt.verify(
         activation_token,
         process.env.ACTIVATION_SECRT || ""
       ) as { user: IUser; activtionCode: string };
 
-      if (newUser.activtionCode !== activation_code) {
+      if (newUser.activtionCode != activation_code) {
         return next(new ErrorHandler("Invalid activation code ", 400));
       }
 
@@ -128,7 +126,7 @@ export const ActivateUser = CatchAsyncErrors(
         email,
         password,
       });
-
+      console.log(user);
       res
         .status(201)
         .json({ success: true, message: "User created successfully" });
