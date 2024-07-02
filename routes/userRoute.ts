@@ -21,28 +21,28 @@ userRoute.post("/register", registertionToken);
 userRoute.post("/activate-user", ActivateUser);
 userRoute.post("/login", LoginUser);
 userRoute.post("/login-socialauth", socialLogin);
-userRoute.get("/logout", isAuthenticated, LogoutUser);
+userRoute.get("/logout", updateToken,isAuthenticated, LogoutUser);
 userRoute.get("/refresh", updateToken);
-userRoute.get("/get-login-user", isAuthenticated, getUser);
+userRoute.get("/get-login-user", updateToken,isAuthenticated, getUser);
 userRoute.get(
   "/get-all-users",
-  isAuthenticated,
+  updateToken,isAuthenticated,
   authorizeRoles("admin"),
   getallUsers
 );
-userRoute.put("/update-user-info", isAuthenticated, updateUser);
-userRoute.put("/update-user-password", isAuthenticated, updatePassword);
-userRoute.put("/update-user-avatar", isAuthenticated, updateAvatar);
+userRoute.put("/update-user-info", updateToken,isAuthenticated, updateUser);
+userRoute.put("/update-user-password", updateToken,isAuthenticated, updatePassword);
+userRoute.put("/update-user-avatar", updateToken,isAuthenticated, updateAvatar);
 userRoute.put(
   "/update-user-role",
-  isAuthenticated,
+  updateToken,isAuthenticated,
   authorizeRoles("admin"),
   updateUserRole
 );
 
 userRoute.delete(
   "/delete-user/:id",
-  isAuthenticated,
+  updateToken,isAuthenticated,
   authorizeRoles("admin"),
   deleteUser
 );

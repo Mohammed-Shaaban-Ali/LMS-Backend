@@ -4,18 +4,19 @@ import {
   getAllNotifications,
   updateNotifications,
 } from "../controller/notificationController";
+import { updateToken } from "../controller/userController";
 const notificationRoute = express.Router();
 
 notificationRoute.get(
   "/get-all-notifications",
-  isAuthenticated,
+  updateToken,isAuthenticated,
   authorizeRoles("admin"),
   getAllNotifications
 );
 
 notificationRoute.put(
   "/update-notifications/:id",
-  isAuthenticated,
+  updateToken,isAuthenticated,
   authorizeRoles("admin"),
   updateNotifications
 );
