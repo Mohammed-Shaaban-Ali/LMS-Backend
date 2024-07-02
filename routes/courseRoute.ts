@@ -6,6 +6,7 @@ import {
   addReview,
   deleteCourse,
   editCourse,
+  generateVideoUrl,
   getAllCourses,
   getAllcoursesAdmin,
   getCoursesByUser,
@@ -33,6 +34,8 @@ courseRoute.get(
 
 courseRoute.put("/add-qusetion", isAuthenticated, addQuestions);
 courseRoute.put("/add-answer", isAuthenticated, addAnswer);
+
+courseRoute.post("/get-vdocipher-otp", generateVideoUrl);
 
 courseRoute.put(
   "/eidt-course/:id",
