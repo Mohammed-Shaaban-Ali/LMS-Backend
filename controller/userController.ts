@@ -161,16 +161,24 @@ export const LoginUser = CatchAsyncErrors(
 );
 
 // logout User
+
 export const LogoutUser = CatchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      // Clear the cookies
       res.cookie("access_token", "", { maxAge: 1 });
       res.cookie("refresh_token", "", { maxAge: 1 });
+
+      // Retrieve and delete user session from Redis
       const userId = req.user?._id || "";
-      redis.del(userId);
+      if (userId) {
+        await redis.del(userId);
+      }
+
+      // Send success response
       res.status(200).json({ success: true, message: "Logout successfully" });
     } catch (error: any) {
-      return next(new ErrorHandler(error.mesage, 400));
+      return next(new ErrorHandler(error.message, 400));
     }
   }
 );
@@ -263,21 +271,13 @@ interface IUpdateuser {
 export const updateUser = CatchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { name, email } = req.body as IUpdateuser;
+      const { name } = req.body as IUpdateuser;
       const userId = req.user?._id;
       const user = await userModel.findById(userId);
-      if (email && user) {
-        const isEmailExist = await userModel.findOne({ email });
-        if (isEmailExist) {
-          return next(new ErrorHandler("Email already exists", 400));
-        }
-        user.email = email;
-      }
       if (name && user) user.name = name;
 
       await user?.save();
       await redis.set(userId, JSON.stringify(user));
-
       res
         .status(201)
         .json({ success: true, message: "User updated successfully" });
@@ -296,26 +296,30 @@ export const updatePassword = CatchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { oldPassword, newPassword } = req.body as IUpdateuser;
-      const user = await userModel.findById(req.user?._id).select("+password");
-
-      if (!oldPassword || !newPassword)
-        return next(
-          new ErrorHandler("Please enter Old passsword and New password", 400)
-        );
-
-      if (user?.password === undefined)
-        return next(new ErrorHandler("Invalid user", 400));
-
-      const isPasswordMatch = await user?.comparePassword(oldPassword);
-      if (!isPasswordMatch)
-        return next(new ErrorHandler("Password is wrong", 400));
-
+      
+      if (!oldPassword || !newPassword) {
+        return next(new ErrorHandler('Please provide both old and new passwords', 400));
+      }
+  
+      const user = await userModel.findById(req.user?._id).select('+password');
+  
+      if (!user) {
+        return next(new ErrorHandler('User not found', 404));
+      }
+  
+      const isPasswordMatch = await user.comparePassword(oldPassword);
+      
+      if (!isPasswordMatch) {
+        return next(new ErrorHandler('Current password is incorrect', 400));
+      }
+  
       user.password = newPassword;
-      await user?.save();
-      await redis.set(user._id, JSON.stringify(user));
+      await user.save();
+      await redis.set(user._id.toString(), JSON.stringify(user)); // Assuming redis is properly configured and imported
+  
       res.status(200).json({ user });
     } catch (error: any) {
-      return next(new ErrorHandler(error.mesage, 400));
+      return next(new ErrorHandler(error.message || 'Internal Server Error', 500));
     }
   }
 );
@@ -330,6 +334,7 @@ export const updateAvatar = CatchAsyncErrors(
     try {
       const { avatar } = req.body;
       const userId = req.user?._id;
+
       const user = await userModel.findById(userId);
       if (avatar && user) {
         if (user?.avatar?.public_id) {
@@ -347,7 +352,6 @@ export const updateAvatar = CatchAsyncErrors(
             folder: "LMS-avatars",
             width: 150,
           });
-
           user.avatar = {
             public_id: myClou.public_id,
             url: myClou.secure_url,

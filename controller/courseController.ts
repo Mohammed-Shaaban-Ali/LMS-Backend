@@ -9,6 +9,7 @@ import mongoose from "mongoose";
 import path from "path";
 import sendMail from "../utils/sendEmail";
 import notificationModel from "../module/Notification";
+import axios from "axios";
 const cloudinary = require("cloudinary");
 
 // upload course
@@ -386,6 +387,30 @@ export const deleteCourse = CatchAsyncErrors(
       res
         .status(201)
         .json({ success: true, message: "course deleted successfully" });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.mesage, 400));
+    }
+  }
+);
+
+// generate video url
+export const generateVideoUrl = CatchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { videoId } = req.body;
+      const response = await axios.post(
+        `https://dev.vdocipher.com/api/videos/${videoId}/otp`,
+        { ttl: 300 },
+        {
+          headers: {
+            Accept: "application/json",
+            "content-type": "application/json",
+            Authorization: `Apisecret pdTjoRlzDeWp4wZdzuKGKe3DPGZ1QFO3eDnN31iNlqmVuENbxj1vRDokX8cyFm9Y`,
+          },
+        }
+      );
+      // console.log(response.data);
+      res.json(response.data);
     } catch (error: any) {
       return next(new ErrorHandler(error.mesage, 400));
     }
