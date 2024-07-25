@@ -5,18 +5,19 @@ import {
   editLayout,
   getLayout,
 } from "../controller/layoutController";
+import { updateToken } from "../controller/userController";
 
 const layoutRoute = express.Router();
 
 layoutRoute.post(
   "/create-layout",
-  isAuthenticated,
+  updateToken,isAuthenticated,
   authorizeRoles("admin"),
   createLayout
 );
 layoutRoute.put(
   "/update-layout",
-  isAuthenticated,
+  updateToken,isAuthenticated,
   authorizeRoles("admin"),
   editLayout
 );

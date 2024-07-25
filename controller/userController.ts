@@ -221,7 +221,7 @@ export const updateToken = CatchAsyncErrors(
       res.cookie("refresh_token", refreshToken, refreshTokenOptions);
       await redis.set(user._id, JSON.stringify(user), "EX", 604800);
 
-      res.status(200).json({ success: true, accessToken });
+next()
     } catch (error: any) {
       return next(new ErrorHandler(error.mesage, 400));
     }
@@ -396,8 +396,8 @@ export const deleteUser = CatchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
+      
       const user = await userModel.findById(id);
-
       if (!user) return next(new ErrorHandler("User not found", 400));
 
       await user.deleteOne({ id });

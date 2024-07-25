@@ -23,7 +23,7 @@ interface ICourseData extends Document {
   title: string;
   description: string;
   videoUrl: string;
-  videoSction: string;
+  videoSection: string;
   videoLength: number;
   videoPlayer: string;
   links: ILink[];
@@ -72,7 +72,7 @@ const commentSchema = new Schema<Iquestion>({
 const courseDataSchema = new Schema<ICourseData>({
   videoUrl: String,
   title: String,
-  videoSction: String,
+  videoSection: String,
   description: String,
   videoLength: Number,
   videoPlayer: String,

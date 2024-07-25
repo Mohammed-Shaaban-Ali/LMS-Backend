@@ -11,13 +11,16 @@ import {
   getAllcoursesAdmin,
   getCoursesByUser,
   getSingleCourse,
+  getSingleCourseAdmin,
   uploadCourse,
 } from "../controller/courseController";
 import { authorizeRoles, isAuthenticated } from "../middleware/auth";
+import { updateToken } from "../controller/userController";
 const courseRoute = express.Router();
 
 courseRoute.post(
   "/create-course",
+  updateToken,
   isAuthenticated,
   authorizeRoles("admin"),
   uploadCourse
@@ -44,6 +47,7 @@ courseRoute.put(
   editCourse
 );
 courseRoute.get("/get-course/:id", getSingleCourse);
+courseRoute.get("/get-course-admin/:id", getSingleCourseAdmin);
 courseRoute.put("/add-review/:id", isAuthenticated, addReview);
 courseRoute.put(
   "/add-replay",
