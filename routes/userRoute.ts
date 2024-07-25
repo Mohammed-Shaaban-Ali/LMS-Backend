@@ -11,10 +11,9 @@ import {
   updatePassword,
   updateToken,
   updateUser,
-  updateUserRole,
+  updateUserRole,getAllUsers
 } from "../controller/userController";
 import { authorizeRoles, isAuthenticated } from "../middleware/auth";
-import { getallUsers } from "../services/userService";
 const userRoute = express.Router();
 
 userRoute.post("/register", registertionToken);
@@ -28,7 +27,7 @@ userRoute.get(
   "/get-all-users",
   updateToken,isAuthenticated,
   authorizeRoles("admin"),
-  getallUsers
+  getAllUsers
 );
 userRoute.put("/update-user-info", updateToken,isAuthenticated, updateUser);
 userRoute.put("/update-user-password", updateToken,isAuthenticated, updatePassword);

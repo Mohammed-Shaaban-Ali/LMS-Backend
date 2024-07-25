@@ -41,28 +41,44 @@ export const editCourse = CatchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const courseId = req.params.id;
+      if (!courseId) {
+        return next(new ErrorHandler("Course ID is required", 400));
+      }
       const data = req.body;
-      const thumbnail = data.thumbnail;
-      if (thumbnail) {
-        await cloudinary.vw.destroy(thumbnail).public_id;
+
+      if (data.thumbnail) {
+        const thumbnail = data.thumbnail;
+        // Assuming thumbnail is a public_id to delete
+        await cloudinary.v2.uploader.destroy(thumbnail);
+
         const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
           folder: "courses",
         });
-
         data.thumbnail = {
           public_id: myCloud.public_id,
           url: myCloud.secure_url,
         };
       }
+
       const course = await CourseModel.findByIdAndUpdate(
         courseId,
         { $set: data },
         { new: true }
       );
 
+      if (!course) {
+        return next(new ErrorHandler("Course not found", 404));
+      }
+
+      // Update the cache with the new course data
+      await redis.set(courseId, JSON.stringify(course), "EX", 604800); // Cache for 1 week
+
       res.status(200).json({ success: true, course });
     } catch (error: any) {
-      return next(new ErrorHandler(error.mesage, 400));
+      console.error("Error updating course:", error);
+      return next(
+        new ErrorHandler(error.message || "Internal Server Error", 500)
+      );
     }
   }
 );
@@ -91,6 +107,30 @@ export const getSingleCourse = CatchAsyncErrors(
   }
 );
 
+export const getSingleCourseAdmin = CatchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const courseId = req.params.id;
+
+      const isCachedExists = await redis.get(courseId);
+      if (isCachedExists) {
+        const course = JSON.parse(isCachedExists);
+        res.status(200).json({ success: true, course });
+      } else {
+        const course = await CourseModel.findById(courseId);
+        if (!course) {
+          return next(new ErrorHandler("Course not found", 404));
+        }
+        await redis.set(courseId, JSON.stringify(course), "EX", 604800); // Cache for 1 week
+        res.status(200).json({ success: true, course });
+      }
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message || "Internal Server Error", 500));
+    }
+  }
+);
+
+
 // get all courses
 
 export const getAllCourses = CatchAsyncErrors(
@@ -101,12 +141,12 @@ export const getAllCourses = CatchAsyncErrors(
       //   const courses = JSON.parse(isachedExists);
       //   res.status(200).json({ success: true, courses });
       // } else {
-        const courses = await CourseModel.find().select(
-          "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links "
-        );
+      const courses = await CourseModel.find().select(
+        "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links "
+      );
 
-        // await redis.set("allCourses", JSON.stringify(courses));
-        res.status(200).json({ success: true, courses });
+      // await redis.set("allCourses", JSON.stringify(courses));
+      res.status(200).json({ success: true, courses });
       // }
     } catch (error: any) {
       return next(new ErrorHandler(error.mesage, 400));

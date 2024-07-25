@@ -396,8 +396,8 @@ export const deleteUser = CatchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
+      
       const user = await userModel.findById(id);
-
       if (!user) return next(new ErrorHandler("User not found", 400));
 
       await user.deleteOne({ id });
