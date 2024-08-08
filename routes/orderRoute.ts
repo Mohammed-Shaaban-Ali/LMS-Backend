@@ -5,10 +5,11 @@ import { createOrder, getAllOrdersadmin } from "../controller/orderController";
 import { updateToken } from "../controller/userController";
 const orderRoute = express.Router();
 
-orderRoute.put("/create-order", updateToken,isAuthenticated, createOrder);
-orderRoute.put(
+orderRoute.put("/create-order", updateToken, isAuthenticated, createOrder);
+orderRoute.get(
   "/get-all-orders",
-  updateToken,isAuthenticated,
+  updateToken,
+  isAuthenticated,
   authorizeRoles("admin"),
   getAllOrdersadmin
 );
