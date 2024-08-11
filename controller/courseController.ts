@@ -125,13 +125,12 @@ export const getSingleCourseAdmin = CatchAsyncErrors(
         res.status(200).json({ success: true, course });
       }
     } catch (error: any) {
-      return next(new ErrorHandler(error.message || "Internal Server Error", 500));
+      return next(
+        new ErrorHandler(error.message || "Internal Server Error", 500)
+      );
     }
   }
 );
-
-
-// get all courses
 
 export const getAllCourses = CatchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -153,7 +152,6 @@ export const getAllCourses = CatchAsyncErrors(
     }
   }
 );
-
 // get courses by user
 
 export const getCoursesByUser = CatchAsyncErrors(
